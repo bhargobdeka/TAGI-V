@@ -375,7 +375,7 @@ classdef task
                 disp(['      LL   : ' num2str(LLlist(s))])
                 disp(['      LL normal   : ' num2str(LLlist_N(s))])
 %                 LLlist_trains(:,s) = LLlist_train;
-                test_after_each_epoch = 1;
+%                 test_after_each_epoch = 1;
                 if net.early_stop == 0 
                     if ~isreal(LLlist_test)
                         LLlist_test   = zeros(100,1);
@@ -388,7 +388,7 @@ classdef task
                 
             end
             
-            Disp_LLlist = 1;
+%             Disp_LLlist = 1;
             if net.early_stop == 0 
                 mean_LLtest   = nanmean(LLlist_tests')';
                 mean_RMSEtest = nanmean(RMSElist_tests')';
