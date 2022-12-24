@@ -115,25 +115,7 @@ if net.gs_Gain == 1
     net.gainS_v2hat    = Gains(2);
     net.gainSb_v2hat   = 1;
     net.gainM_v2hat    = 1;
-else
-    net.gain_HP(1,:)   = [Gains(1)  Gains(1)];
-    net.gain_HP(2,:)   = [Gains(2)  Gains(2)];
-    net.gainSb_v2hat   = 1;
-    net.gainM_v2hat    = 1;
-    alpha = 0.01*(1-0.9); beta = 0.01*(1-0.9);
-    net.m_w_v2hat      = [alpha*(1-1/net.nx)*Gains(1)*(1/net.nx)       1e-10       1e-10 ]; % 0.1*alpha*(1-1/50)*Gains(1)*(1/50) % alpha*Gains(2)*(1/50)
-    net.m_b_v2hat      = [beta*(1/net.nx)                              1e-10        1e-10 ]; % beta*(1/50) % beta*(1/50)
-    
-    net.var_w_v2hat    = [(alpha*(1-1/net.nx)*Gains(1)*(1/net.nx))^2   1e-10       1e-10  ]; %(0.1*alpha*(1-1/50)*Gains(1)*(1/50))^2 %(alpha*Gains(2)*(1/50))^2
-    net.var_b_v2hat    = [(beta*(1/net.nx))^2                          1e-10       1e-10  ]; %(beta*(1/50))^2 %(beta*(1/50))^2
 end
-% % creating mesh
-load('EEW2g.mat');
-load('SEW2g.mat');
-load('aOg.mat');
-net.EEW2g = EEW2g;
-net.SEW2g = SEW2g;
-net.aOg   = aOg;
 %% Early Stopping
 net.epochlist  = [];
 net.early_stop = 0;
@@ -141,29 +123,13 @@ if net.early_stop == 1
     net.maxEpoch       = 100;
     net.val_data        = 1;
 else
-    net.maxEpoch       = 100; %18
+    net.maxEpoch       = 18; %18
     net.val_data        = 0;
 end
-%% Hierarchical Prior for variance
-net.HP   = 0;
-net.HP_M = 2;    % 1 for full , 2 for layerwise
-net.xv_HP = 0.005^2;
-net.HP_BNI  = [[0.5*ones(650,1);0.5*ones(50,1);2.7e-05*50*ones(50,1);ones(50,1);ones(2,1)] [(0.1/13)*ones(650,1);(0.1/50)*ones(50,1);1e-05*ones(50,1);(0.01/13)*ones(50,1);(1/50)*ones(2,1) ] ];  %[0.001^2*ones(650,1);0.001^2*ones(50,1);1e-05^2*ones(50,1);0.01^2*ones(50,1);0.005^2*ones(2,1) ]
+
 % Two layer properties
 net.init = [];
 
-% net.patience = 3;
-% syms a b;
-% ndiv=100;
-% Y1      = 1.5.^(linspace(log(0.0000001),log(30),ndiv));
-% Y1(1:7) = 1e-05.*Y1(1:7);
-% [net.EEW2g,net.SEW2g] = meshgrid(Y1);
-% net.aOg=zeros(ndiv,ndiv);
-% for i=1:ndiv
-%     for j=1:ndiv
-%         net.aOg(i,j)=single(root(net.SEW2g(i,j)*a^3 - 4*net.SEW2g(i,j)*a^2 - net.EEW2g(i,j)^2*a^2 - 2*net.EEW2g(i,j)^2*a + 5*net.SEW2g(i,j)*a - 2*net.SEW2g(i,j) - net.EEW2g(i,j)^2, a, 3));
-%     end
-% end
 %% Run
 task.runRegression(net, x, y, trainIdx, testIdx)
 

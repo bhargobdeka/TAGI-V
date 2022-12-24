@@ -104,14 +104,7 @@ net.cv_v2hatLL  = 0;
 net.numFolds    = 1;
 net.permuteData = 1;    % 1 for split, else for fold
 net.ratio       = 0.8;
-% Cross-validation for HP
-net.cv_HP       = 0;
-load('EEW2g.mat');
-load('SEW2g.mat');
-load('aOg.mat');
-net.EEW2g = EEW2g;
-net.SEW2g = SEW2g;
-net.aOg   = aOg;
+
 %% Early Stopping
 net.epochlist  = [];
 net.early_stop = 0;
@@ -119,14 +112,9 @@ if net.early_stop == 1
     net.maxEpoch       = 100;
     net.val_data        = 1;
 else
-    net.maxEpoch       = 100; %41
+    net.maxEpoch       = 41; %41
     net.val_data        = 0;
 end
-%% Hierarchical Prior for variance
-net.HP    = 0;
-net.HP_M  = 2;    % 1 for full , 2 for layerwise
-net.xv_HP = 0.00005^2;
-net.HP_BNI  = [];
 % Two layer properties
 net.init = [];
 %% Load Gain factors or HP
@@ -142,17 +130,6 @@ if net.gs_Gain == 1
     net.gainS_v2hat    = Gains;
     net.gainSb_v2hat   = 1;
     net.gainM_v2hat    = 1;
-else
-    net.gain_HP(1,:)   = [Gains(1)  Gains(1)];
-    net.gain_HP(2,:)   = [Gains(2)  Gains(2)];
-    net.gainSb_v2hat   = 1;
-    net.gainM_v2hat    = 1;
-    alpha = 0.01*(1-0.9); beta = 0.01*(1-0.9);
-    net.m_w_v2hat      = [alpha*(1-1/net.nx)*Gains(1)*(1/net.nx)       1e-10       1e-10 ]; % 0.1*alpha*(1-1/50)*Gains(1)*(1/50) % alpha*Gains(2)*(1/50)
-    net.m_b_v2hat      = [beta*(1/net.nx)                              1e-10        1e-10 ]; % beta*(1/50) % beta*(1/50)
-    
-    net.var_w_v2hat    = [(alpha*(1-1/net.nx)*Gains(1)*(1/net.nx))^2   1e-10       1e-10  ]; %(0.1*alpha*(1-1/50)*Gains(1)*(1/50))^2 %(alpha*Gains(2)*(1/50))^2
-    net.var_b_v2hat    = [(beta*(1/net.nx))^2                          1e-10       1e-10  ]; %(beta*(1/50))^2 %(beta*(1/50))^2
 end
 % net.Gains(1)       = 0.1;
 % net.Gains(2)       = 1e-03;

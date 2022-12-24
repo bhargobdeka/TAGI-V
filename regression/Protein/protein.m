@@ -100,12 +100,7 @@ net.numFolds    = 1;
 net.permuteData = 2;    % 1 for split, else for fold
 net.ratio       = 0.8;
 net.gs_Gain     = 1;
-load('EEW2g.mat');
-load('SEW2g.mat');
-load('aOg.mat');
-net.EEW2g = EEW2g;
-net.SEW2g = SEW2g;
-net.aOg   = aOg;
+
 %% Load Gain factors or HP
 load('loadGains.mat')
 load('loadEpochs.mat')
@@ -119,12 +114,7 @@ if net.gs_Gain == 1
     net.gainS_v2hat    = Gains;
     net.gainSb_v2hat   = 1;
     net.gainM_v2hat    = 1;
-else
-    net.gain_HP(1,:)   = [Gains(1)  Gains(1)];
-    net.gain_HP(2,:)   = [Gains(2)  Gains(2)];
-    net.gainSb_v2hat   = 1;
-    net.gainM_v2hat    = 1;
-    
+
 end
 % net.Gains(2)       = 1e-03;
 % net.opt_Epochs     = opt_Epochs;
@@ -135,16 +125,10 @@ if net.early_stop == 1
     net.maxEpoch       = 100;
     net.val_data        = 1;
 else
-    net.maxEpoch       = 100; %20
+    net.maxEpoch        = 20; %20
     net.val_data        = 0;
 end
-%% Hierarchical Prior for variance
-net.HP      = 0;
-net.HP_M    = 2;    % 1 for full , 2 for layerwise
-net.xv_HP   = 0.005^2;
-net.HP_BNI  = [[0.0385*ones(650,1);0.01*ones(50,1);2.7e-05*ones(50,1);0.0769*ones(50,1);0.02*ones(2,1)] 0.001^2*ones(802,1) ];
-% Cross-validation for HP
-net.cv_HP   = 0;
+
 % Two layer properties
 net.init    = [];
 %% Run

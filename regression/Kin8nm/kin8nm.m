@@ -105,16 +105,6 @@ if net.gs_Gain == 1
     net.gainS_v2hat    = Gains;
     net.gainSb_v2hat   = 1;
     net.gainM_v2hat    = 1;
-else
-    net.gain_HP(1,:)   = [Gains(1)  Gains(1)];
-    net.gain_HP(2,:)   = [Gains(2)  Gains(2)];
-    net.gainSb_v2hat   = 1;
-    net.gainM_v2hat    = 1;
-    net.m_w_v2hat      = [0.01^2*Gains(1)*(1/net.nx) 0.01^2*Gains(1)*(1/50)    0.01^2*Gains(2)*(1/50)];
-    net.m_b_v2hat      = [0.01^2*(1/net.nx)  0.01^2*(1/50)   0.01^2*(1/50)];
-    
-    net.var_w_v2hat    = [0.01^4*Gains(1)*(1/net.nx) 0.01^4*Gains(1)*(1/50) 0.01^4*Gains(2)*(1/50)];
-    net.var_b_v2hat    = [0.01^4*(1/net.nx) 0.01^4*(1/50) 0.01^4*(1/50)];
 end
 % net.opt_Epochs     = opt_Epochs;
 % Cross-validation for v2hat_LL
@@ -122,14 +112,7 @@ net.cv_v2hatLL  = 0;
 net.numFolds    = 1;
 net.permuteData = 2;    % 1 for split, else for fold
 net.ratio       = 0.8;
-% Cross-validation for HP
-net.cv_HP       = 0;
-load('EEW2g.mat');
-load('SEW2g.mat');
-load('aOg.mat');
-net.EEW2g = EEW2g;
-net.SEW2g = SEW2g;
-net.aOg   = aOg;
+
 %% Early Stopping
 net.epochlist  = [];
 net.early_stop = 0;
@@ -137,14 +120,9 @@ if net.early_stop == 1
     net.maxEpoch       = 100;
     net.val_data        = 1;
 else
-    net.maxEpoch       = 100; %22
+    net.maxEpoch        = 22; %22
     net.val_data        = 0;
 end
-%% Hierarchical Prior for variance
-net.HP    = 0;
-net.HP_M  = 2;    % 1 for full , 2 for layerwise
-net.xv_HP = 0.005^2;
-net.HP_BNI  = [];
 % Two layer properties
 net.init = [];
 %% Run

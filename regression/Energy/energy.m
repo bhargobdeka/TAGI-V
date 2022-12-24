@@ -109,7 +109,7 @@ if net.early_stop == 1
     net.maxEpoch       = 100;
     net.val_data        = 1;
 else
-    net.maxEpoch       = 100; %30
+    net.maxEpoch       = 30; %30
     net.val_data        = 0;
 end
 %% Hierarchical Prior for variance
@@ -131,26 +131,8 @@ if net.gs_Gain == 1
     net.gainS_v2hat    = Gains(2);
     net.gainSb_v2hat   = 1;
     net.gainM_v2hat    = 1;
-else
-    net.gain_HP(1,:)   = [Gains(1)  Gains(1)];
-    net.gain_HP(2,:)   = [Gains(2)  Gains(2)];
-    net.gainSb_v2hat   = 1;
-    net.gainM_v2hat    = 1;
-    alpha = 0.01*(1-0.9); beta = 0.01*(1-0.9);
-    net.m_w_v2hat      = [alpha*(1-1/net.nx)*Gains(1)*(1/net.nx)       1e-10       1e-10 ]; % 0.1*alpha*(1-1/50)*Gains(1)*(1/50) % alpha*Gains(2)*(1/50)
-    net.m_b_v2hat      = [beta*(1/net.nx)                              1e-10        1e-10 ]; % beta*(1/50) % beta*(1/50)
-    
-    net.var_w_v2hat    = [(alpha*(1-1/net.nx)*Gains(1)*(1/net.nx))^2   1e-10       1e-10  ]; %(0.1*alpha*(1-1/50)*Gains(1)*(1/50))^2 %(alpha*Gains(2)*(1/50))^2
-    net.var_b_v2hat    = [(beta*(1/net.nx))^2                          1e-10       1e-10  ]; %(beta*(1/50))^2 %(beta*(1/50))^2
 end
 
-% net.opt_Epochs = opt_Epochs;   % Warning: run grid search again!!!!!!
-% load('EEW2g.mat');
-% load('SEW2g.mat');
-% load('aOg.mat');
-% net.EEW2g = EEW2g;
-% net.SEW2g = SEW2g;
-% net.aOg   = aOg;
 %% Run
 task.runRegression(net, x, y, trainIdx, testIdx)
 
