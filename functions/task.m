@@ -138,16 +138,7 @@ classdef task
             netT.repBatchSize = 1;
             [netT, statesT, maxIdxT] = network.initialization(netT); 
             normStatT = tagi.createInitNormStat(netT);
-            % Optimization for v2hat_LL
-%             if net.cv_v2hatLL == 1
-%                 NEpoch            = opt.crossvalV2hatLL(net, x, y);
-%                 net.epochCV       = NEpoch;
-%                 disp([' No. of Epoch ' num2str(NEpoch)])
-%                 
-%             else
-%                 net.epochCV       = 1;
-%                 NEpoch            = 1;
-%             end
+            
             % Loop
             Nsplit        = net.numSplits;
             RMSElist      = zeros(Nsplit, 1);
@@ -196,10 +187,7 @@ classdef task
                 if net.gs_Gain == 1
                     net.gainS          = net.Gains(1)*ones(1,length(net.layer)-1); % net.Gains(1) --BD
                      net.gainS_v2hat   = net.Gains(2);       % net.Gains(2)
-%                     net.gainS_v2hat  = net.Gains;
-%                     maxEpoch         = net.opt_Epochs(s);
-%                     disp(['   Gain mean : ' num2str(net.Gains(1))])
-%                     disp(['   Gain v2hat : ' num2str(net.Gains(2))])
+
                 else
                     net.gainS         = net.gain_HP(1,1)*ones(1,length(net.layer)-1);
                     net.gainS_v2hat   = net.gain_HP(2,1);
@@ -221,17 +209,7 @@ classdef task
                 end
                 [xtrain, ytrain, xtest, ~, ~, ~, mytrain, sytrain] = dp.normalize(xtrain, ytrain, xtest, ytest);
                 %% Initalize weights and bias
-                
-                if net.gs_Gain == 0
-                    % Initialize mean of v2hat with Sw,Sb
-                    alpha = [0.92 0.92];
-                    theta   = tagi.initializeWeights_HP_BNI(net,alpha);
-%                     [~, Sw, ~, Sb]  = tagi.extractParameters(theta);
-                   
-%                     [net.var_w_v2hat, net.var_b_v2hat]  = initializeVariance_V2hat(net, beta);
-                else
-                    theta    = tagi.initializeWeightBias(net);
-                end
+                theta    = tagi.initializeWeightBias(net);
                 normStat = tagi.createInitNormStat(net);
                 net.sv   = svinit;
                 %%
@@ -258,34 +236,15 @@ classdef task
                     end
                     epoch    = epoch + 1;
                     maxEpoch = net.maxEpoch;
-                    epoch
-                    net.epoch   = epoch;      %BD
+%                     epoch
+                    net.epoch   = epoch;          %BD
                     if net.gs_Gain == 1
                         start_time_oneE = tic;    %BD
                         [theta, normStat] = network.regression(net, theta, normStat, states, maxIdx, xtrain, ytrain);
                         runtime_oneE(epoch,s) = toc(start_time_oneE);
-                        
-%                         disp(['runtime in one epoch: ' num2str(toc(start_time_oneE))])
-                        
-%                         [ml_train, Sl_train]     = dp.denormalize(mz_train(:,1), Sz_train(:,1), mytrain, sytrain);
-%                         LL_train(epoch)          = mt.loglik(ytrain*sytrain+mytrain, ml_train, Sl_train);
-                    else
-                        [theta, normStat, mz_train, Sz_train, ~,  ~, w_v2hat, b_v2hat] = network.regression(net, theta, normStat, states, maxIdx, xtrain, ytrain);
-                        [ml_train, Sl_train]     = dp.denormalize(mz_train(:,1), Sz_train(:,1), mytrain, sytrain);
-                        LL_train(epoch)          = mt.loglik(ytrain*sytrain+mytrain, ml_train, Sl_train);
-                        net.m_w_v2hat            = [w_v2hat(1,1) w_v2hat(1,2) w_v2hat(1,3)];
-                        net.m_b_v2hat            = [b_v2hat(1,1) b_v2hat(1,2) b_v2hat(1,3)];
-                        net.var_w_v2hat          = [w_v2hat(2,1) w_v2hat(2,2) w_v2hat(2,3)];
-                        net.var_b_v2hat          = [b_v2hat(2,1) b_v2hat(2,2) b_v2hat(2,3)];
                     end
 %                   % Validation
                     if net.val_data == 1
-                        if net.gs_Gain == 0
-                            netV.m_w_v2hat       = w_v2hat(:,1);
-                            netV.m_b_v2hat       = b_v2hat(:,1);
-                            netV.var_w_v2hat     = w_v2hat(:,2);
-                            netV.var_b_v2hat     = b_v2hat(:,2);
-                        end
                         [~, ~, mzval, Szval] = network.regression(netV, theta, normStatV, statesV, maxIdxV, xval, []);
                         [ml_val, Sl_val]     = dp.denormalize(mzval(:,1), Szval(:,1), mytrain, sytrain);
                         LL_val               = mt.loglik(yval, ml_val, Sl_val);
@@ -322,25 +281,7 @@ classdef task
                             break;
                         end
                     end
-%                     ml_train   = zl_train(:,1);
-%                     Sl_train   = Szl_train(:,1);
-%                     [ml_train, Sl_train] = dp.denormalize(ml_train, Sl_train, mytrain, sytrain);
-%                     ytrain_og = ytrain*sytrain + mytrain;
-%                     LLlist_train(epoch)  = mt.loglik(ytrain_og, ml_train, Sl_train);
-                    
-                        
-                    %% Testing
-%                     if val_data == 0
-%                         [~, ~, zl_test, Szl_test] = network.regression(netT, theta, normStatT, statesT, maxIdxT, xtest, []);
-% 
-%                         ml_test   = zl_test(:,1);
-%                         Sl_test   = Szl_test(:,1);
-%                         [ml_test, Sl_test] = dp.denormalize(ml_test, Sl_test, mytrain, sytrain);
-%                         LLlist_test(epoch) = mt.loglik(ytest, ml_test, Sl_test);
-%                     end
-%                     if epoch == maxEpoch
-%                         break
-%                     end
+
                     %% Testing after each Epoch
                     %test_after_each_epoch = 1;
                     if net.early_stop == 0              %BD
@@ -399,22 +340,14 @@ classdef task
                 % Testing
                 netT.v2hat_LL  = [2 2];
                 net.sv = 0;
-                if net.gs_Gain == 0
-                    netT.m_w_v2hat   = w_v2hat(1,:);
-                    netT.m_b_v2hat   = b_v2hat(1,:);
-                    netT.var_w_v2hat = w_v2hat(2,:);
-                    netT.var_b_v2hat = b_v2hat(2,:);
-                end
+                
                 nObsTest = size(xtest, 1);
                 [~, ~, yp, Syp] = network.regression(netT, theta, normStatT, statesT, maxIdxT, xtest, []);               
                 if net.learnSv==1&&strcmp(net.noiseType, 'hete') % Online noise inference
                     ypM  = reshape(yp', [net.nl, 1, 2, nObsTest]);
                     SypM = reshape(Syp', [net.nl, 1, 2, nObsTest]);
                     
-%                     mv2  = reshape(ypM(:,:,2,:), [net.nl*nObsTest, 1]);
-%                     Sv2  = reshape(SypM(:,:,2,:), [net.nl*nObsTest, 1]);
-%                     mv2a = act.expFun(mv2, Sv2, net.gpu);
-%                     [mv2a,~] = act.NoiseActFun(mv2, Sv2, net.NoiseActFunIdx, net.gpu);
+
                     ml   = reshape(ypM(:,:,1,:), [net.nl*nObsTest, 1]);
                     Sl   = reshape(SypM(:,:,1,:), [net.nl*nObsTest, 1]);
                 else
