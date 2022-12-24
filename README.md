@@ -4,4 +4,4 @@ The package contains the UCI regression datasets such as BostonHousing, Concrete
 # References
 *Tractable Approximate Gaussian Inference for Bayesian Neural Networks*
 Goulet, J.-A., Nguyen, L.H., and Amiri, S.
-Journal of Machine Learning Research, 2021, 20-1009, Volume 22, Number 251, pp. 1-23.,
+Journal of Machine Learning Research, 2021, 20-1009, Volume 22, Number 251, pp. 1-23.
