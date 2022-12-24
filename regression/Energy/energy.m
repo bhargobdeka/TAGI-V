@@ -100,8 +100,7 @@ net.cv_v2hatLL  = 0;
 net.numFolds    = 1;
 net.permuteData = 1;    % 1 for split, else for fold
 net.ratio       = 0.8;
-% Cross-validation for HP
-net.cv_HP       = 0;
+
 %% Early Stopping
 net.epochlist  = [];
 net.early_stop = 0;

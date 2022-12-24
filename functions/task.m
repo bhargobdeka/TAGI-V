@@ -202,11 +202,6 @@ classdef task
                     net.epochCV       = 1;
                     NEpoch            = 1;
                 end
-                % Cross-Validation for Epoch for HP                           %BD
-                if net.cv_HP == 1
-                    maxEpoch          = opt.crossvalHP(net, xtrain, ytrain);
-                    disp([' No. of Epoch ' num2str(maxEpoch)])
-                end
                 [xtrain, ytrain, xtest, ~, ~, ~, mytrain, sytrain] = dp.normalize(xtrain, ytrain, xtest, ytest);
                 %% Initalize weights and bias
                 theta    = tagi.initializeWeightBias(net);
