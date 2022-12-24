@@ -32,22 +32,13 @@ ytrain     = f(xtrain) + normrnd(zeros(length(noiseTrain), 1), sqrt(noiseTrain))
 %% Load Train Data
 load('xtrain_TY1_TAGI_BNI.mat')
 load('ytrain_TY1_TAGI_BNI.mat')
-% xtrain = xtrainData;
-% ytrain = ytrainData';
-% load('xtrain_DVI.mat')
-% load('ytrain_DVI.mat')
-% xtrain = xtrain_DVI;
-% ytrain = ytrain_DVI';
+
 xtrain_OGData = xtrain;
 ytrain_OGData = ytrain;
 
-%xtest  = linspace(-1,1,ntest)';
 nx     = size(xtrain, 2);
 ny     = size(ytrain, 2);
-% load('xtest_DVI.mat')
-% load('ytest_DVI.mat')
-% xtest = xtest_DVI;
-% ytest = ytest_DVI';
+
 
 %% Noise properties
 net.noiseType = 'hete';   %'hete'
@@ -96,9 +87,6 @@ net.idx_LL_M       = [];
 net.var_mode       = 0;
 % Parameter initialization
 net.initParamType  = 'He';
-
-
-
 % Splits   
 net.numSplits      = 1; 
 % Cross-validation for v2hat_LL
@@ -106,8 +94,7 @@ net.cv_v2hatLL     = 0;
 net.numFolds       = 1;
 net.permuteData    = 2;    % 1 for split, else for fold
 net.ratio          = 0.8;
-% Cross-validation for HP
-net.cv_HP          = 0;
+
 %% Load Gain factors or HP
 net.gs_Gain        = 1;    % 1 for grid-search, 0 for HP learning
 if net.gs_Gain == 1
@@ -115,17 +102,6 @@ if net.gs_Gain == 1
     net.gainS_v2hat    = 1;
     net.gainSb_v2hat   = 1;
     net.gainM_v2hat    = 1;
-else
-    net.gain_HP(1,:)   = [1  1];
-    net.gain_HP(2,:)   = [Gains(2)  Gains(2)];
-    net.gainSb_v2hat   = 1;
-    net.gainM_v2hat    = 1;
-    alpha = 0.01*(1-0.92); beta = 0.01*(1-0.92);
-    net.m_w_v2hat      = [alpha*(1-1/net.nx)*Gains(1)*(1/net.nx)       1e-10       1e-10 ]; % 0.1*alpha*(1-1/50)*Gains(1)*(1/50) % alpha*Gains(2)*(1/50)
-    net.m_b_v2hat      = [beta*(1/net.nx)                              1e-10        1e-10 ]; % beta*(1/50) % beta*(1/50)
-    
-    net.var_w_v2hat    = [(3*alpha*(1-1/net.nx)*Gains(1)*(1/net.nx))^2   1e-10       1e-10  ]; %(0.1*alpha*(1-1/50)*Gains(1)*(1/50))^2 %(alpha*Gains(2)*(1/50))^2
-    net.var_b_v2hat    = [(3*beta*(1/net.nx))^2                          1e-10       1e-10  ]; %(beta*(1/50))^2 %(beta*(1/50))^2
 end 
 % Two layer properties
 net.init = [];
@@ -138,11 +114,6 @@ else
     net.maxEpoch       = 100;
     net.val_data        = 1;
 end
-%% Hierarchical Prior for variance
-net.HP   = 0;
-net.HP_M = 2;    % 1 for full , 2 for layerwise
-net.xv_HP   = 0.005^2;
-net.HP_BNI  = [[0.5*ones(650,1);0.5*ones(50,1);2.7e-05*50*ones(50,1);ones(50,1);ones(2,1)] [(0.1/13)*ones(650,1);(0.1/50)*ones(50,1);1e-05*ones(50,1);(0.01/13)*ones(50,1);(1/50)*ones(2,1) ] ];  %[0.001^2*ones(650,1);0.001^2*ones(50,1);1e-05^2*ones(50,1);0.01^2*ones(50,1);0.005^2*ones(2,1) ]
 
 %% Run
 % Initialization          
@@ -174,11 +145,7 @@ if net.val_data == 1
     %  Validation set
     [xtrain, ytrain, xval, yval] = dp.split(xtrain, ytrain,0.8);
 end
-% Cross-Validation for Epoch for HP                           %BD
-if net.cv_HP == 1
-    maxEpoch          = opt.crossvalHP(net, xtrain, ytrain);
-    disp([' No. of Epoch ' num2str(maxEpoch)])
-end
+
 % Initalize weights and bias
 theta    = tagi.initializeWeightBias(net);
 normStat = tagi.createInitNormStat(net);
@@ -209,7 +176,6 @@ LL_vals      = [];
 
 while ~stop
     epoch = epoch + 1;
-    epoch
     net.epoch   = epoch;      %BD
     net.epochCV = epoch;
     if epoch >1
@@ -258,16 +224,6 @@ if net.early_stop == 0
 end
 drawnow
 run_time_e = toc(rumtime_s);
-% LLlist_test(end)
-% Plotting
-% figure;
-% scatter(1:maxEpoch,LLlist_train,1,'ob');hold on;scatter(1:maxEpoch,LLlist_test,1,'dr')
-% %ylim([-1, -0.4])
-% xlabel('epoch')
-% ylabel('LL')
-% legend('train','test')
-% [~,N_train] = max(LLlist_train);
-% [~,N_test] = max(LLlist_test);
 
 xtest  = linspace(-1,1,200)';
 nObsTest   = size(xtest, 1);
@@ -294,22 +250,17 @@ Pred_TAGI_BNI = [ml Sl];
 xTrue = sort(xtrain_OGData);
 yTrue = f(xTrue);
 sTrue = noise(xTrue);
-load('Pred_DNN.mat')
+
 figure;
-%scatter(xtrain,ytrain,'+m');hold on
 plot(xTrue,yTrue,'r');hold on
 patch([xTrue' fliplr(xTrue')],[yTrue' + sqrt(sTrue') fliplr(yTrue' - sqrt(sTrue'))],'red','EdgeColor','none','FaceColor','red','FaceAlpha',0.3)
 plot(xtest,ml,'k');hold on
 patch([xtest' fliplr(xtest')],[ml' + sqrt(Sl') fliplr(ml' - sqrt(Sl'))],'green','EdgeColor','none','FaceColor','green','FaceAlpha',0.3);hold on
-% plot(xtest,Pred_DNN(:,1),'b');hold on
-% patch([xtest' fliplr(xtest')],[Pred_DNN(:,1)' + sqrt(Pred_DNN(:,2)') fliplr(Pred_DNN(:,1)' - sqrt(Pred_DNN(:,2)'))],'blue','EdgeColor','none','FaceColor','blue','FaceAlpha',0.3);
 h=legend('ytrue','$\pm 1$ true stdv.','$\mu$','$\mu \pm \sigma$');
 set(h,'Interpreter','latex')
 xlabel('x','Interpreter','latex')
 ylabel('y','Interpreter','latex')
 title('TAGI-BNI')
-% xlim([-5,5])
-% ylim([-5,7])
 set(gcf,'Color',[1 1 1])
 opts=['scaled y ticks = false,',...
     'scaled x ticks = false,',...
