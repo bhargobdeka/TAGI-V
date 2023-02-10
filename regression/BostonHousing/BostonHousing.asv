@@ -67,7 +67,7 @@ net.nx             = nx;
 net.nl             = ny;
 net.nv2            = ny;
 % Batch size 
-net.batchSize      = 32; %1
+net.batchSize      = 100; %1
 net.repBatchSize   = 1; 
 % Layer| 1: FC; 2:conv; 3: max pooling; 
 % 4: avg pooling; 5: layerNorm; 6: batchNorm 
@@ -76,7 +76,7 @@ net.imgSize        = [0 0 0];
 net.layer          = [1           1      1       ];
 net.nodes          = [net.nx     50     net.ny   ]; 
 net.actFunIdx      = [0           4     0        ];
-net.NoiseActFunIdx = 1; %1-> relu, 5-> mrelu                                         %BD
+net.NoiseActFunIdx = 5; %1-> relu, 5-> mrelu                                         %BD
 net.NoiseActFun_LL_Idx = 4;
 % Observations standard deviation
 net.learnSv        = 1;% Online noise learning
@@ -101,14 +101,14 @@ net.ratio          = 0.8;
 %% Load Gain factors or HP
 net.gs_Gain        = 1;    % 1 for grid-search, 0 for HP learning
 if net.gs_Gain == 1
-    if net.NoiseActFunIdx == 1
+    if net.NoiseActFunIdx == 5
         net.gainS          = Gains(1)*ones(1,length(net.layer)-1);
         net.gainS_v2hat    = Gains(2);
         net.gainSb_v2hat   = 1;
         net.gainM_v2hat    = 1;
     else
-        net.gainS          = 1*ones(1,length(net.layer)-1);
-        net.gainS_v2hat    = 0.01;
+        net.gainS          = Gains*ones(1,length(net.layer)-1);
+        net.gainS_v2hat    = Gains(2);
         net.gainSb_v2hat   = 1;
         net.gainM_v2hat    = 1;
     end
@@ -124,7 +124,7 @@ if net.early_stop == 1
     net.maxEpoch       = 100;
     net.val_data        = 1;
 else
-    net.maxEpoch       = 17;  % optimal epoch : 17
+    net.maxEpoch       = 15;  % optimal epoch : 17
     net.val_data        = 0;
 end
 

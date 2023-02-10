@@ -66,7 +66,7 @@ net.nl             = ny;
 net.nv2            = ny;
 net.ny             = 2*ny; 
 % Batch size 
-net.batchSize      = 32; 
+net.batchSize      = 10; 
 net.repBatchSize   = 1; 
 % Layer| 1: FC; 2:conv; 3: max pooling; 
 % 4: avg pooling; 5: layerNorm; 6: batchNorm 
@@ -75,8 +75,9 @@ net.imgSize        = [0 0 0];
 net.layer          = [1         1      1      ];
 net.nodes          = [net.nx    50     net.ny ]; 
 net.actFunIdx      = [0         4      0      ];
-net.NoiseActFunIdx = 1;
+% net.NoiseActFunIdx = 5;
 net.NoiseActFun_LL_Idx = 4;
+net.NoiseActFunIdx = 5; %1-> exp, 5-> mrelu    
 % Observations standard deviation
 net.learnSv        = 1;% Online noise learning
 net.sv             = 0;%0.32*ones(1,1, net.dtype);  
@@ -89,7 +90,7 @@ net.var_mode       = 0;
 % Parameter initialization
 net.initParamType  = 'He';
 net.gainS          = 0.5*ones(1, length(net.layer)-1);
-net.gainS_v2hat    = 1e-04;
+net.gainS_v2hat    = 1e-02;
 net.gainSb_v2hat   = 1;
 net.gainM_v2hat    = 1;
 

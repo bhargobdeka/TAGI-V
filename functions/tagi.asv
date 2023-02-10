@@ -377,27 +377,23 @@ classdef tagi
                    
                 end
             end
-%             if net.epoch < 10
-%                 constr = 0.01;
-%                 deltaMw(deltaMw>constr) = constr;
-%                 deltaMw(deltaMw < -constr) = -constr;
-%                 deltaSw(deltaSw>constr) = constr;
-%                 deltaSw(deltaSw < -constr) = -constr;
-%                 deltaMb(deltaMb>constr) = constr;
-%                 deltaMb(deltaMb < -constr) = -constr;
-%                 deltaSb(deltaSb>constr) = constr;
-%                 deltaSb(deltaSb < -constr) = -constr;
+            if net.epoch < 10
+                constr = 0.01;
+                deltaMw(deltaMw>constr) = constr;
+                deltaMw(deltaMw < -constr) = -constr;
+                deltaSw(deltaSw>constr) = constr;
+                deltaSw(deltaSw < -constr) = -constr;
+                deltaMb(deltaMb>constr) = constr;
+                deltaMb(deltaMb < -constr) = -constr;
+                deltaSb(deltaSb>constr) = constr;
+                deltaSb(deltaSb < -constr) = -constr;
 %             elseif net.epoch < 5
-%                 constr = 0.005;
+%                  constr = 0.005;
 %                 deltaMw(deltaMw>constr) = constr;
-%                 deltaMw(deltaMw < -constr) = -constr;
 %                 deltaSw(deltaSw>constr) = constr;
-%                 deltaSw(deltaSw < -constr) = -constr;
 %                 deltaMb(deltaMb>constr) = constr;
-%                 deltaMb(deltaMb < -constr) = -constr;
 %                 deltaSb(deltaSb>constr) = constr;
-%                 deltaSb(deltaSb < -constr) = -constr;
-%             end
+            end
             deltaTheta = tagi.compressParameters(deltaMw, deltaSw, deltaMb, deltaSb, deltaMwx, deltaSwx, deltaMbx, deltaSbx); 
             
         end

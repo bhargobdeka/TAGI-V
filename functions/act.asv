@@ -221,15 +221,15 @@ classdef act
             elseif funIdx == 5 % mrelu 
                 sz           = sqrt(Sz);
                 alpha        = -mz./sz;
-                omega        = max(1E-6,1-normcdf(alpha));
+                omega        = max(1E-3,1-normcdf(alpha));
                 beta         = normpdf(alpha)./omega;
                 kappa        = 1+alpha.*beta-beta.^2;
                 m_trunc      = mz+beta.*sz;
                 ma           = m_trunc.*omega;
                 Sa           = omega.*kappa.*Sz+omega.*(1-omega).*ma.^2;
-                
+                %J=sa./sz;
                 J            = sqrt(omega.*kappa);
-                Cza          = J.*sqrt(kappa).*Sz;% 
+                Cza          = 
                 
             end
         end
